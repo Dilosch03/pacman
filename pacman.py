@@ -7,6 +7,7 @@ Exercises
 3. Make the ghosts smarter.
 """
 
+from math import acos
 from random import choices
 from turtle import *
 
@@ -146,17 +147,18 @@ def move():
     ontimer(move, 100)
 
 def moveGhost(ghost:tuple[vector,vector])->None:
-    pos = ghost[0]
-    movement = ghost[1]
-    if (valid(pos+movement)):
-        pos.move(movement)
-        return
+    """Movement logic for a given ghost"""
+    sorted_dirs = getDir2Pacman(ghost)
+    for dir in sorted_dirs:
+        if(valid(ghost[0]+dir)):
+            ghost[1] = dir
+            break
+    ghost[0].move(ghost[1])
 
-    else:
-        for i in choices(range(4),k=4):
-            if (valid(pos+posible_movements[i])):
-                ghost[1] = posible_movements[i]
-                return
+def getDir2Pacman(ghost:tuple[vector,vector])->list[vector]:
+    """List of directions in order of what would get the ghost closer to pacman"""
+    direct_dir = pacman-ghost[0]
+    return sorted(posible_movements,key=lambda v: acos((v.x * direct_dir.x + v.y * direct_dir.y)/(abs(v)*abs(direct_dir))))
 
 def change(x, y):
     """Change pacman aim if valid."""
