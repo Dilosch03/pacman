@@ -2,14 +2,12 @@
 
 Exercises
 
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
+1. Change the number of ghosts.
+2. Change where pacman starts.
+3. Make the ghosts smarter.
 """
 
-from random import choice
+from random import choices
 from turtle import *
 
 from freegames import floor, vector
@@ -50,6 +48,7 @@ tiles = [
 ]
 # fmt: on
 
+posible_movements = [vector(10,0),vector(-10,0),vector(0,10), vector(0,-10)]
 
 def square(x, y):
     """Draw square using path at (x, y)."""
@@ -130,20 +129,10 @@ def move():
     goto(pacman.x + 10, pacman.y + 10)
     dot(20, 'yellow')
 
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(10, 0),
-                vector(-10, 0),
-                vector(0, 10),
-                vector(0, -10),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
+    for ghost in ghosts:
+        moveGhost(ghost)
 
+        point = ghost[0]
         up()
         goto(point.x + 10, point.y + 10)
         dot(20, 'red')
@@ -156,6 +145,18 @@ def move():
 
     ontimer(move, 100)
 
+def moveGhost(ghost:tuple[vector,vector])->None:
+    pos = ghost[0]
+    movement = ghost[1]
+    if (valid(pos+movement)):
+        pos.move(movement)
+        return
+
+    else:
+        for i in choices(range(4),k=4):
+            if (valid(pos+posible_movements[i])):
+                ghost[1] = posible_movements[i]
+                return
 
 def change(x, y):
     """Change pacman aim if valid."""
