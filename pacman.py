@@ -2,14 +2,13 @@
 
 Exercises
 
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
+1. Change the number of ghosts.
+2. Change where pacman starts.
+3. Make the ghosts smarter.
 """
 
-from random import choice
+from math import acos
+from random import choices
 from turtle import *
 
 from freegames import floor, vector
@@ -17,7 +16,7 @@ from freegames import floor, vector
 state = {'score': 0}
 path = Turtle(visible=False)
 writer = Turtle(visible=False)
-aim = vector(5, 0)
+aim = vector(10, 0)
 pacman = vector(-40, -80)
 ghosts = [
     [vector(-180, 160), vector(10, 0)],
@@ -50,6 +49,7 @@ tiles = [
 ]
 # fmt: on
 
+posible_movements = [vector(5,0),vector(-5,0),vector(0,5), vector(0,-5)]
 
 def square(x, y):
     """Draw square using path at (x, y)."""
@@ -130,20 +130,10 @@ def move():
     goto(pacman.x + 10, pacman.y + 10)
     dot(20, 'yellow')
 
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(10, 0),
-                vector(-10, 0),
-                vector(0, 10),
-                vector(0, -10),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
+    for ghost in ghosts:
+        moveGhost(ghost)
 
+        point = ghost[0]
         up()
         goto(point.x + 10, point.y + 10)
         dot(20, 'red')
@@ -156,6 +146,19 @@ def move():
 
     ontimer(move, 100)
 
+def moveGhost(ghost:tuple[vector,vector])->None:
+    """Movement logic for a given ghost"""
+    sorted_dirs = getDir2Pacman(ghost)
+    for dir in sorted_dirs:
+        if(valid(ghost[0]+dir)):
+            ghost[1] = dir
+            break
+    ghost[0].move(ghost[1])
+
+def getDir2Pacman(ghost:tuple[vector,vector])->list[vector]:
+    """List of directions in order of what would get the ghost closer to pacman"""
+    direct_dir = pacman-ghost[0]
+    return sorted(posible_movements,key=lambda v: acos((v.x * direct_dir.x + v.y * direct_dir.y)/(abs(v)*abs(direct_dir))))
 
 def change(x, y):
     """Change pacman aim if valid."""
@@ -171,10 +174,10 @@ writer.goto(160, 160)
 writer.color('white')
 writer.write(state['score'])
 listen()
-onkey(lambda: change(5, 0), 'Right')
-onkey(lambda: change(-5, 0), 'Left')
-onkey(lambda: change(0, 5), 'Up')
-onkey(lambda: change(0, -5), 'Down')
+onkey(lambda: change(10, 0), 'Right')
+onkey(lambda: change(-10, 0), 'Left')
+onkey(lambda: change(0, 10), 'Up')
+onkey(lambda: change(0, -10), 'Down')
 world()
 move()
 done()
