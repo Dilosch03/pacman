@@ -49,7 +49,7 @@ tiles = [
 ]
 # fmt: on
 
-posible_movements = [vector(5,0),vector(-5,0),vector(0,5), vector(0,-5)]
+posible_movements = [vector(10, 0), vector(-10, 0), vector(0, 10), vector(0, -10)]
 
 def square(x, y):
     """Draw square using path at (x, y)."""
