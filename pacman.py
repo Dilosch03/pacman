@@ -18,11 +18,12 @@ path = Turtle(visible=False)
 writer = Turtle(visible=False)
 aim = vector(10, 0)
 pacman = vector(-40, -80)
+ghost_speed = 10
 ghosts = [
-    [vector(-180, 160), vector(10, 0)],
-    [vector(-180, -160), vector(0, 10)],
-    [vector(100, 160), vector(0, -10)],
-    [vector(100, -160), vector(-10, 0)],
+    [vector(-180, 160), ghost_speed*vector(1, 0)],
+    [vector(-180, -160), ghost_speed*vector(0, 1)],
+    [vector(100, 160), ghost_speed*vector(0, -1)],
+    [vector(100, -160), ghost_speed*vector(-1, 0)],
 ]
 # fmt: off
 tiles = [
@@ -49,7 +50,7 @@ tiles = [
 ]
 # fmt: on
 
-posible_movements = [vector(10, 0), vector(-10, 0), vector(0, 10), vector(0, -10)]
+posible_movements = [vector(1, 0), vector(-1, 0), vector(0, 1), vector(0, -1)]
 
 def square(x, y):
     """Draw square using path at (x, y)."""
@@ -150,8 +151,8 @@ def moveGhost(ghost:tuple[vector,vector])->None:
     """Movement logic for a given ghost"""
     sorted_dirs = getDir2Pacman(ghost)
     for dir in sorted_dirs:
-        if(valid(ghost[0]+dir)):
-            ghost[1] = dir
+        if(valid(ghost[0]+dir*ghost_speed)):
+            ghost[1] = dir*ghost_speed
             break
     ghost[0].move(ghost[1])
 
